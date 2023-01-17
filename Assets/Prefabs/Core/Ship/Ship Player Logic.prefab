@@ -21653,6 +21653,10 @@ PrefabInstance:
       propertyPath: m_Text
       value: F11  |  Keyboard
       objectReference: {fileID: 0}
+    - target: {fileID: 9210690968650562467, guid: 599038888aa0c8546847d93bf32fad59, type: 3}
+      propertyPath: m_Text
+      value: Right Stick Press  |  Xbox Controller
+      objectReference: {fileID: 0}
     - target: {fileID: 9219671201392794896, guid: 599038888aa0c8546847d93bf32fad59, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

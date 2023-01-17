@@ -235,7 +235,7 @@ namespace Core.MapData {
                     yield return new WaitForEndOfFrame();
                 }
             }
-
+            
             // Generate TeamwinTerrain if its included in the current scene
             var TWterr = FindObjectOfType<MapGenerate>();
             if (TWterr)
@@ -256,8 +256,9 @@ namespace Core.MapData {
                     //Run Cleanup to actually make the thread queue move forward
                     TWterr.CleanupThreads();
                 }
-
+                print("Done loading TWTerr");
             }
+            
             _scenesLoading.Clear();
         }
     }

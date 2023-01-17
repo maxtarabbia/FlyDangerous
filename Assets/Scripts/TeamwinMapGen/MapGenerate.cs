@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using Telepathy;
 using UnityEngine;
-using UnityEngine.Profiling;
 using System;
 using System.Threading;
 using Unity.Mathematics;
@@ -24,6 +23,7 @@ public class MapGenerate : MonoBehaviour
     public int editorpreviewlod;
 
     public Vector2 Offset;
+    public string stringSeed;
 
 
     public bool autoupdate;
@@ -55,7 +55,7 @@ public class MapGenerate : MonoBehaviour
     }
     private void Awake()
     {
-        setseed();
+        setseed(false);
     }
     void Update()
     {
@@ -107,20 +107,21 @@ public class MapGenerate : MonoBehaviour
             }
         }
     }
-    void setseed()
+    void setseed(bool IsEditor)
     {
-        if(Game.Instance.SessionStatus == SessionStatus.Loading)
+        if (!IsEditor)
         {
-
-            for(int i=0;i<NoiseArray.Length;i++)
+            if (Game.Instance.SessionStatus == SessionStatus.Loading)
             {
-                NoiseArray[i].seed = int.Parse(HashGenerator.ComputeSha256Hash(Game.Instance.Seed).Remove(0, 60), System.Globalization.NumberStyles.HexNumber)-i;
+                stringSeed = Game.Instance.Seed;
             }
         }
-        else
+        for (int i=0;i<NoiseArray.Length;i++)
         {
-           // Noisearray[1].seed = Noisearray[1].seed;
+           NoiseArray[i].seed = int.Parse(HashGenerator.ComputeSha256Hash(stringSeed).Remove(0, 60), System.Globalization.NumberStyles.HexNumber)-i;
         }
+        
+
     }
     
     public void drawmapineditor()
@@ -134,11 +135,12 @@ public class MapGenerate : MonoBehaviour
         }
         else if (drawmode == Drawmode.ColorMap)
         {
-             display.DrawTexture(TextureGenerator.TexturefromeColormap(mapdata.colormap, MapChunkSize, MapChunkSize));
+            display.DrawTexture(TextureGenerator.TexturefromeColormap(mapdata.colormap, MapChunkSize, MapChunkSize));
         }
         else if (drawmode == Drawmode.Mesh)
         {
-             display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapdata.heightmap, editorpreviewlod), TextureGenerator.TexturefromeColormap(mapdata.colormap, MapChunkSize, MapChunkSize));
+            setseed(true);
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapdata.heightmap, editorpreviewlod), TextureGenerator.TexturefromeColormap(mapdata.colormap, MapChunkSize, MapChunkSize));
         }
     }
 

@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using UnityEditor.Profiling;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Profiling;
+//using UnityEngine.Profiling;
 
 public class Endlessterrain : MonoBehaviour
 {
@@ -75,6 +75,7 @@ public class Endlessterrain : MonoBehaviour
         GameObject.Find("Mesh").SetActive(false);
 
 
+
         updatedtrackedposition();
 
         maxViewDist = detaillevels[detaillevels.Length - 1].visibleDistThreshold;
@@ -82,11 +83,26 @@ public class Endlessterrain : MonoBehaviour
         chunksVisibleInViewDist = Mathf.RoundToInt((maxViewDist / chunkSize) + 1f);
         MapGenerator = FindObjectOfType<MapGenerate>();
         UpdateVisibleChunks();
+        GenerateAtTags();
+    }
+    void GenerateAtTags()
+    {
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Terrain Gen Marker");
+        foreach (GameObject gameObjectI in gameObjects)
+        {
+            taggedobj = gameObjectI;
+            viewerPosition = new Vector2(taggedobj.transform.position.x,taggedobj.transform.position.z);
+            viewerPosition -= new Vector2(gameObject.transform.position.x - gameObject.transform.localPosition.x, gameObject.transform.position.z - gameObject.transform.localPosition.z);
+            viewerPosition /= scale;
+            UpdateVisibleChunks();
+        }
     }
 
     void updatedtrackedposition()
     {
-        taggedobj = GameObject.FindGameObjectWithTag("Terrain Gen Marker");
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Terrain Gen Marker");
+        taggedobj = gameObjects[gameObjects.Length-1];
+        
 
         if (Trackingmode == trackingmode.Transform || taggedobj == null)
         {
@@ -147,9 +163,9 @@ public class Endlessterrain : MonoBehaviour
                 }
                 else
                 {
-                    Profiler.BeginSample("Generating New Chunk");
+                    //Profiler.BeginSample("Generating New Chunk");
                     TerrainchunkDictionary.Add(viewdChunkCoord, new TerrainChunk(viewdChunkCoord,chunkSize,detaillevels ,transform,MapMaterial,structprefab, subStructprefab));
-                    Profiler.EndSample();
+                    //Profiler.EndSample();
                 }
             }
         }
@@ -513,7 +529,7 @@ public class Endlessterrain : MonoBehaviour
         }
         public int Next()
         {
-            Profiler.BeginSample("PRNG Next");
+           // Profiler.BeginSample("PRNG Next");
             seed += 5321;
 
             int num = seed;
@@ -521,15 +537,15 @@ public class Endlessterrain : MonoBehaviour
             num = seed >> ((~iterator + 7) % 32) ^ num;
 
             iterator = num;
-            Profiler.EndSample();
+           // Profiler.EndSample();
             return seed;
         }
         public float NextFloat()
         {
-            Profiler.BeginSample("PRNG NextFloat");
+           // Profiler.BeginSample("PRNG NextFloat");
             float num = Next();
             num = math.abs((Next() / 1.65486532f) % 1f);
-            Profiler.EndSample();
+           // Profiler.EndSample();
             return num;
         }
 
